@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<springProperty scope="context" name="LOG_PATH"
+		source="pheonix.audit.logging.file.path"
+		defaultValue="." />
+	<springProperty scope="context" name="LOG_FILE"
+		source="pheonix.audit.logging.file.name" defaultValue="pheonix-transaction" />
+	<!--  <springProperty scope="context" name="DB_URL" source="spring.datasource.url" defaultValue="jdbc:h2:mem:spring_app_db" />
+	<springProperty scope="context" name="DB_DRIVER" source="spring.datasource.driverClassName"	defaultValue="org.h2.Driver" />
+	<springProperty scope="context" name="DB_USER"	source="spring.datasource.username" defaultValue="sa" />
+	<springProperty scope="context" name="DB_PWD" source="spring.datasource.password" defaultValue="sa" />
+ 	-->
+ 	
+ 	<springProperty scope="context" name="DB_URL" source="spring.datasource.url" defaultValue="jdbc:mysql://192.168.56.1:3306/spring_app_db?useSSL=false" />
+	<springProperty scope="context" name="DB_DRIVER" source="spring.datasource.driverClassName"	defaultValue="com.mysql.cj.jdbc.Driver" />
+	<springProperty scope="context" name="DB_USER"	source="spring.datasource.username" defaultValue="app_user" />
+	<springProperty scope="context" name="DB_PWD" source="spring.datasource.password" defaultValue="test123" />
+
+
+	<appender name="consoleAppender"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+			</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>TRACE</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+	</appender>
+
+	<appender name="Local-ConsoleAppender"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+			</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>TRACE</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+	</appender>
+
+	 <appender name="accessAuditLogDBAppender" class="com.pheonix.logging.PheonixAuditDBAppender">  
+	 <connectionSource
+		class="com.pheonix.logging.PheonixDriverManagerConnectionSource">
+		<driverClass>${DB_DRIVER}</driverClass>
+		<url>${DB_URL}</url>
+		<user>${DB_USER}</user>
+		<password>${DB_PWD}</password>
+	</connectionSource>
+
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>DEBUG</level>
+		<onMatch>DENY</onMatch>
+	</filter>
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>INFO</level>
+		<onMatch>DENY</onMatch>
+	</filter>
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>TRACE</level>
+		<onMatch>DENY</onMatch>
+	</filter>
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>WARN</level>
+		<onMatch>ACCEPT</onMatch>
+	</filter>
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>ERROR</level>
+		<onMatch>DENY</onMatch>
+	</filter>
+</appender>
+	
+
+	<springProfile name="local,dev">
+		<appender name="accessLogFileAppender4Dev"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>${LOG_PATH}/${LOG_FILE}.log</file>
+			<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<fileNamePattern>${LOG_PATH}/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
+				</fileNamePattern>
+				<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>2MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+			</rollingPolicy>
+			<encoder>
+				<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+				</Pattern>
+			</encoder>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>DEBUG</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>INFO</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>TRACE</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>WARN</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>ERROR</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+		</appender>
+
+		<appender name="Async-accessLogFileAppender4Dev"
+			class="ch.qos.logback.classic.AsyncAppender">
+			<appender-ref ref="accessLogFileAppender4Dev" />
+		</appender>
+	</springProfile>
+
+	<springProfile name="test,prod">
+		<appender name="accessLogFileAppender4TestAndProd"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>${LOG_PATH}/${LOG_FILE}.log</file>
+			<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<fileNamePattern>${LOG_PATH}/${LOG_FILE}.%d{yyyy-MM-dd}.%i.log
+				</fileNamePattern>
+				<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>2MB</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+			</rollingPolicy>
+			<encoder>
+				<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+				</Pattern>
+			</encoder>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>DEBUG</level>
+				<onMatch>DENY</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>INFO</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>TRACE</level>
+				<onMatch>DENY</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>WARN</level>
+				<onMatch>ACCEPT</onMatch>
+			</filter>
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>ERROR</level>
+				<onMatch>DENY</onMatch>
+			</filter>
+		</appender>
+
+		<appender name="Async-accessLogFileAppender4TestAndProd"
+			class="ch.qos.logback.classic.AsyncAppender">
+			<appender-ref ref="accessLogFileAppender4TestAndProd" />
+		</appender>
+
+	</springProfile>
+
+	<appender name="errorLogFileAppender4All"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${LOG_FILE}-error.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/${LOG_FILE}-error.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5KB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+			</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>DENY</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>DENY</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>TRACE</level>
+			<onMatch>DENY</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>DENY</onMatch>
+		</filter>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+		</filter>
+	</appender>
+
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="consoleAppender" />
+	</root>
+
+	<appender name="Async-errorLogFileAppender4All"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="errorLogFileAppender4All" />
+	</appender>
+ 	<appender name="Async-auditLogDBAppender4All"
+		class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="accessAuditLogDBAppender" />
+	</appender>  
+
+	<springProfile name="local">
+		<logger name="com.pheonix" level="DEBUG" additivity="false">
+			<appender-ref ref="consoleAppender" />
+			<appender-ref ref="Async-accessLogFileAppender4Dev" />
+			<appender-ref ref="Async-errorLogFileAppender4All" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="dev">
+		<logger name="com.pheonix" level="DEBUG" additivity="false">
+			
+			<appender-ref ref="consoleAppender" />
+			<appender-ref ref="Async-accessLogFileAppender4Dev" />
+			 <appender-ref ref="Async-auditLogDBAppender4All" /> 
+			 <appender-ref ref="Async-errorLogFileAppender4All" />  
+		</logger>
+	</springProfile>
+
+	<springProfile name="test,prod">
+		<logger name="com.pheonix" level="INFO" additivity="false">
+			<appender-ref
+				ref="Async-accessLogFileAppender4TestAndProd" />
+			<appender-ref ref="Async-errorLogFileAppender4All" />
+		</logger>
+	</springProfile>
+</configuration>
